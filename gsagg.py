@@ -13,6 +13,8 @@ from os import listdir
 
 import pandas
 
+Version = '0.0.1'
+
 class GrainSizeAggregator:
     def __init__(self, reporter):
         self.reporter = reporter
