@@ -42,6 +42,8 @@ class GrainSizeAggregator:
         aggRows = pandas.DataFrame(gsRows)
         aggRows.columns = headers
         aggRows.to_csv(outputPath, index=False)
+        self.log("Writing grain size data from {} files to {}...".format(len(gsRows), outputPath))
+        self.log("Process completed successfully!")
 
     def openGrainSizeCSV(self, csvpath):
         self.log("opening {}".format(csvpath))

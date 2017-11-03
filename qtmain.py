@@ -30,7 +30,7 @@ class AggregatorWindow(QtWidgets.QWidget):
         vlayout = QtWidgets.QVBoxLayout(self)
         dirlayout = self.makeFileLayout(self.gsDirText, self.chooseGSDirButton, "Directory containing grain size files - all *.csv files will be processed")
         vlayout.addLayout(dirlayout)
-        outputlayout = self.makeFileLayout(self.outputPathText, self.chooseOutputFileButton, "File to which aggregated grain size data will be written")
+        outputlayout = self.makeFileLayout(self.outputPathText, self.chooseOutputFileButton, "CSV File to which aggregated grain size data will be written")
         vlayout.addLayout(outputlayout)
         
         vlayout.addWidget(QtWidgets.QLabel("Log!", self))
@@ -50,7 +50,7 @@ class AggregatorWindow(QtWidgets.QWidget):
             return
         outFile = self.outputPathText.text()
         if not os.path.exists(os.path.dirname(outFile)):
-            self._warnbox("Badness", "Destination directory {} does not exist".format(os.path.dirname(outFile)))
+            self._warnbox("Badness", "Output directory {} does not exist".format(os.path.dirname(outFile)))
             return
 
         self.aggButton.setEnabled(False)
