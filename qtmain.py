@@ -60,7 +60,9 @@ class AggregatorWindow(QtWidgets.QWidget):
             gsa = gsagg.GrainSizeAggregator(self.report)
             gsa.aggregate(gsFiles, outFile)
         except Exception as err:
-            self.report("\nSUPER FATAL ERROR: " + str(err))
+            errstr = "SUPER FATAL ERROR: " + str(err)
+            self.report(errstr)
+            self._errbox("Fatal Error", str(err))
         self.aggButton.setEnabled(True)
         
     def gatherGSFiles(self, gsDir):
@@ -73,6 +75,9 @@ class AggregatorWindow(QtWidgets.QWidget):
         
     def _warnbox(self, title, message):
         QtWidgets.QMessageBox.warning(self, title, message)
+        
+    def _errbox(self, title, message):
+        QtWidgets.QMessageBox.critical(self, title, message)        
         
     def chooseGSDir(self):
         dlg = QtWidgets.QFileDialog(self, "Choose Grain Size directory", self.lastFileDialogPath)

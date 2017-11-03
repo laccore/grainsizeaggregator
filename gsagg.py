@@ -32,6 +32,10 @@ class GrainSizeAggregator:
                 # pull first column from first file for headers in aggregated file
                 headers = self.getColAsRow(df, 'A')
             row = self.getColAsRow(df, 'B')
+            
+            if len(row) != len(headers):
+                raise Exception("Grain size file {} contains {} rows, differs from expected {}".format(f, len(row), len(headers)))
+
             gsRows.append(row)
         
         # combine header with values and export a CSV
