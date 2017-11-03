@@ -8,6 +8,7 @@ Qt GUI main for gsaggregator
 
 import os
 import sys
+import platform
 
 from PyQt5 import QtWidgets
 
@@ -33,7 +34,7 @@ class AggregatorWindow(QtWidgets.QWidget):
         outputlayout = self.makeFileLayout(self.outputPathText, self.chooseOutputFileButton, "CSV File to which aggregated grain size data will be written")
         vlayout.addLayout(outputlayout)
         
-        vlayout.addWidget(QtWidgets.QLabel("Log!", self))
+        vlayout.addWidget(makeItemLabel("Log!"))
         self.logArea = QtWidgets.QTextEdit(self)
         self.logArea.setReadOnly(True)
         self.logArea.setToolTip("Big, Heavy, Wood!")
@@ -95,11 +96,6 @@ class AggregatorWindow(QtWidgets.QWidget):
             self.report("Selected output file {}".format(selectedFile))
             self.outputPathText.setText(selectedFile)
     
-    def makeDescLabel(self, desc):
-        label = QtWidgets.QLabel(desc)
-        label.setStyleSheet("QLabel {font-size: 11pt;}")
-        return label
-    
     # return layout with editText (includes label) and chooserButton on one line,
     # descText on the next with minimal vertical space between the two
     def makeFileLayout(self, editText, chooserButton, descText):
@@ -110,15 +106,27 @@ class AggregatorWindow(QtWidgets.QWidget):
         hlayout.addWidget(chooserButton)
         layout.addLayout(hlayout)
         layout.setSpacing(0)
-        layout.addWidget(self.makeDescLabel(descText))
+        layout.addWidget(makeDescLabel(descText))
         return layout
+    
+def makeDescLabel(text):
+    label = QtWidgets.QLabel(text)
+    ss = "QLabel {font-size: 9pt;}" if platform.system() == "Windows" else "QLabel {font-size: 11pt;}" 
+    label.setStyleSheet(ss)
+    return label
+
+def makeItemLabel(text):
+    label = QtWidgets.QLabel(text)
+    if platform.system() == "Windows":
+        label.setStyleSheet("QLabel {font-size: 11pt;}")
+    return label
 
 class LabeledLineText(QtWidgets.QWidget):
     def __init__(self, parent, label):
         QtWidgets.QWidget.__init__(self, parent)
         layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(0,0,0,0)
-        self.label = QtWidgets.QLabel(label, parent)
+        self.label = makeItemLabel(label)
         self.edit = QtWidgets.QLineEdit(parent)
         layout.addWidget(self.label)
         layout.addSpacing(10)
