@@ -59,6 +59,6 @@ def report(text):
     print text
 
 if __name__ == '__main__':
-    files = ["examples/CRWD/{}".format(f) for f in listdir("examples/CRWD") if f.endswith('.csv')]
+    files = [] # RGB files to aggregate
     gsa = GrainSizeAggregator(report)
-    gsa.aggregate(files, "aggOutput2.csv")
+    gsa.aggregate(files, "aggOutput.csv")
