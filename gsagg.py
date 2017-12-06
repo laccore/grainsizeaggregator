@@ -38,16 +38,20 @@ class GrainSizeAggregator:
 
             gsRows.append(row)
         
-        # combine header with values and export a CSV
+        # combine header with values and export an Excel File
         aggRows = pandas.DataFrame(gsRows)
         aggRows.columns = headers
-        aggRows.to_csv(outputPath, index=False)
+        #aggRows.to_csv(outputPath, index=False)
+        aggRows.to_excel(outputPath, sheet_name="Aggregated Grain Sizes", index=False)
         self.log("Writing grain size data from {} files to {}...".format(len(gsRows), outputPath))
         self.log("Process completed successfully!")
 
     def openGrainSizeCSV(self, csvpath):
         self.log("opening {}".format(csvpath))
-        return pandas.read_csv(csvpath, names=['A', 'B', 'C'])
+        
+        # all files are coming from a Windows machine, interpret as CP-1252 to avoid
+        # issues encoding as UTF-8 when writing aggregated results to an Excel file.
+        return pandas.read_csv(csvpath, names=['A', 'B', 'C'], encoding='cp1252')
     
     def getColAsRow(self, dataframe, col):
         return pandas.Series(dataframe[col].values.reshape(1,-1)[0])

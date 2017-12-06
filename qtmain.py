@@ -9,6 +9,7 @@ Qt GUI main for gsaggregator
 import os
 import sys
 import platform
+import traceback
 
 from PyQt5 import QtWidgets
 
@@ -29,9 +30,9 @@ class AggregatorWindow(QtWidgets.QWidget):
         self.chooseOutputFileButton.clicked.connect(self.chooseOutputFile)
         
         vlayout = QtWidgets.QVBoxLayout(self)
-        dirlayout = self.makeFileLayout(self.gsDirText, self.chooseGSDirButton, "Directory containing grain size files - all *.csv files will be processed")
+        dirlayout = self.makeFileLayout(self.gsDirText, self.chooseGSDirButton, "Directory containing grain size files. All *.csv and *.txt files will be processed.")
         vlayout.addLayout(dirlayout)
-        outputlayout = self.makeFileLayout(self.outputPathText, self.chooseOutputFileButton, "CSV File to which aggregated grain size data will be written")
+        outputlayout = self.makeFileLayout(self.outputPathText, self.chooseOutputFileButton, "Excel file to which aggregated grain size data will be written.")
         vlayout.addLayout(outputlayout)
         
         vlayout.addWidget(makeItemLabel("Log!"))
@@ -63,11 +64,12 @@ class AggregatorWindow(QtWidgets.QWidget):
         except Exception as err:
             errstr = "SUPER FATAL ERROR: " + str(err)
             self.report(errstr)
+            self.report(traceback.format_exc())
             self._errbox("Fatal Error", str(err))
         self.aggButton.setEnabled(True)
         
     def gatherGSFiles(self, gsDir):
-        return [os.path.join(gsDir, f) for f in os.listdir(gsDir) if f.endswith('.csv')]
+        return [os.path.join(gsDir, f) for f in os.listdir(gsDir) if f.endswith('.csv') or f.endswith('.txt')]
         
     def report(self, text):
         text += "\n"
@@ -91,8 +93,8 @@ class AggregatorWindow(QtWidgets.QWidget):
         dlg = QtWidgets.QFileDialog(self, "Choose output file", self.lastFileDialogPath)
         selectedFile, dummyFilter = dlg.getSaveFileName(self)
         if selectedFile != "":
-            if not selectedFile.lower().endswith('.csv'):
-                selectedFile += '.csv'
+            if not selectedFile.lower().endswith('.xlsx'):
+                selectedFile += '.xlsx'
             self.report("Selected output file {}".format(selectedFile))
             self.outputPathText.setText(selectedFile)
     
