@@ -1,0 +1,6 @@
+*.pyc
+build/
+dist/
+ve_grainsizeaggregator/
+test/
+__pycache__/
