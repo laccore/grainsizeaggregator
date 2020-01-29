@@ -30,10 +30,17 @@ class AggregatorWindow(QtWidgets.QWidget):
         self.chooseOutputFileButton.clicked.connect(self.chooseOutputFile)
         
         vlayout = QtWidgets.QVBoxLayout(self)
-        dirlayout = self.makeFileLayout(self.gsDirText, self.chooseGSDirButton, "Directory containing grain size files. All *.csv and *.txt files will be processed.")
+        dir_text = "Directory containing grain size files. All *.csv and *.txt files will be processed."
+        dirlayout = self.makeFileLayout(self.gsDirText, self.chooseGSDirButton, dir_text)
         vlayout.addLayout(dirlayout)
-        outputlayout = self.makeFileLayout(self.outputPathText, self.chooseOutputFileButton, "Excel file to which aggregated grain size data will be written.")
+        self.subdirsBox = QtWidgets.QCheckBox("Include subdirectories", self)
+        self.subdirsBox.setStyleSheet(getPlatformStyleSheet())
+        vlayout.addWidget(self.subdirsBox)
+        vlayout.addSpacing(20)
+        output_text = "Excel file to which aggregated grain size data will be written."
+        outputlayout = self.makeFileLayout(self.outputPathText, self.chooseOutputFileButton, output_text)
         vlayout.addLayout(outputlayout)
+        vlayout.addSpacing(15)
         
         vlayout.addWidget(makeItemLabel("Log!"))
         self.logArea = QtWidgets.QTextEdit(self)
@@ -58,7 +65,7 @@ class AggregatorWindow(QtWidgets.QWidget):
         self.aggButton.setEnabled(False)
         self.logArea.clear()
         try:
-            gsFiles = self.gatherGSFiles(gsDir)
+            gsFiles = self.gatherGSFiles(gsDir, include_subdirs=self.subdirsBox.isChecked())
             gsa = gsagg.GrainSizeAggregator(self.report)
             gsa.aggregate(gsFiles, outFile)
         except Exception as err:
@@ -67,9 +74,18 @@ class AggregatorWindow(QtWidgets.QWidget):
             self.report(traceback.format_exc())
             self._errbox("Fatal Error", str(err))
         self.aggButton.setEnabled(True)
-        
-    def gatherGSFiles(self, gsDir):
-        return [os.path.join(gsDir, f) for f in os.listdir(gsDir) if f.endswith('.csv') or f.endswith('.txt')]
+
+    def valid_extension(self, filename):
+        return filename.endswith('csv') or filename.endswith('txt')
+
+    def gatherGSFiles(self, gsDir, include_subdirs):
+        if include_subdirs:
+            gs_files = []
+            for dirpath, _, filenames in os.walk(gsDir):
+                gs_files += [os.path.join(dirpath, f) for f in filenames if self.valid_extension(f)]
+            return gs_files
+        else:
+            return [os.path.join(gsDir, f) for f in os.listdir(gsDir) if self.valid_extension(f)]
         
     def report(self, text):
         text += "\n"
@@ -110,7 +126,10 @@ class AggregatorWindow(QtWidgets.QWidget):
         layout.setSpacing(0)
         layout.addWidget(makeDescLabel(descText))
         return layout
-    
+
+def getPlatformStyleSheet():
+    return "QCheckBox {font-size: 9pt;}" if platform.system() == "Windows" else "QCheckBox {font-size: 11pt;}" 
+
 def makeDescLabel(text):
     label = QtWidgets.QLabel(text)
     ss = "QLabel {font-size: 9pt;}" if platform.system() == "Windows" else "QLabel {font-size: 11pt;}" 

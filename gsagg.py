@@ -13,7 +13,7 @@ from os import listdir
 
 import pandas
 
-Version = '0.0.2'
+Version = '0.0.3'
 
 class GrainSizeAggregator:
     def __init__(self, reporter):
@@ -60,7 +60,7 @@ class GrainSizeAggregator:
         self.reporter(text)
 
 def report(text):
-    print text
+    print(text)
 
 if __name__ == '__main__':
     files = [] # RGB files to aggregate
